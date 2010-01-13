@@ -1,5 +1,12 @@
 #context-menu
-  This is the left side
+  -@character.titles.each do |title|
+    %b
+    %ul
+      #{title.name} level #{title.level}
+      -title.skills.each do |skill|
+        %li
+          #{skill.name} level #{skill.level}
+
 #content
   This is the content of the page
 #some-ads-and-stuff
