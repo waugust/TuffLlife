@@ -443,11 +443,16 @@ hr.space { background: #dddddd; color: #dddddd; clear: both; float: none; width:
 
 body.content .container { width: 950px; margin: 0 auto; overflow: hidden; display: inline-block; }
 body.content .container { display: block; }
-body.content #header, body.content #footer { display: inline; float: left; margin-right: 10px; width: 950px; }
+body.content #header { margin: 0; padding: 0; border: 0; outline: 0; overflow: hidden; display: inline-block; }
+body.content #header { display: block; }
+body.content #header li { list-style-type: none; margin-left: 0px; white-space: nowrap; display: inline; float: left; padding-left: 4px; padding-right: 4px; }
+body.content #header li.first { padding-left: 0px; }
+body.content #header li.last { padding-right: 0px; }
+body.content #header, body.content #footer { display: inline; float: left; margin-right: 10px; width: 950px; background: #999999; }
 * html body.content #header, * html body.content #footer { overflow-x: hidden; }
-body.content #context-menu { display: inline; float: left; margin-right: 10px; width: 190px; }
+body.content #context-menu { display: inline; float: left; margin-right: 10px; width: 190px; background: #999999; }
 * html body.content #context-menu { overflow-x: hidden; }
-body.content #content { display: inline; float: left; margin-right: 10px; width: 430px; }
+body.content #content { display: inline; float: left; margin-right: 10px; width: 550px; }
 * html body.content #content { overflow-x: hidden; }
-body.content #some-ads-and-stuff { display: inline; float: left; margin-right: 0; width: 310px; }
-* html body.content #some-ads-and-stuff { overflow-x: hidden; }
+body.content #rightside { display: inline; float: left; margin-right: 0; width: 190px; background: #999999; }
+* html body.content #rightside { overflow-x: hidden; }

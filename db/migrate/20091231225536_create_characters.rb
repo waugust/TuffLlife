@@ -28,6 +28,8 @@ class CreateCharacters < ActiveRecord::Migration
       t.integer :stat_attack, :null => false, :default => 1
       t.integer :stat_defense, :null => false, :default => 1
       t.string :adjstats
+      t.integer :current_hp, :null => false, :default => 100
+      t.integer :current_en, :null => false, :default => 50
       t.timestamps
     end
   end

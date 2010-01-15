@@ -3,6 +3,7 @@
 @import compass/reset.sass
 @import partials/base.sass
 @import blueprint/modules/grid.sass
+@import compass/utilities.sass
 +blueprint
 // Remove the scaffolding when you're ready to start doing visual design.
 // Or leave it in if you're happy with how blueprint looks out-of-the-box
@@ -10,12 +11,17 @@
 body.content
   .container
     +container
+  #header
+    +horizontal-list
   #header, #footer
     +column(24)
+    :background = !menu_color
   #context-menu
     +column(5)
+    :background = !menu_color
   #content
-    +column(11)
-  #some-ads-and-stuff
-    +column(8, last)
+    +column(14)
+  #rightside
+    +column(5, "last")
+    :background = !menu_color
 

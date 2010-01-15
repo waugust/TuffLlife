@@ -9,7 +9,7 @@ class Character < ActiveRecord::Base
   belongs_to :player
   belongs_to :location
   has_many :addictions
-  
+
   def eqitems
     self.equipment.items
   end
@@ -22,6 +22,7 @@ class Character < ActiveRecord::Base
     val=an_array[rand(max)]
     return val
   end
+
   def attack(mytarget)
     target_hp=mytarget.health
 
@@ -86,7 +87,7 @@ class Character < ActiveRecord::Base
     modified=(value-10)/2
     return modified
   end
-  def adjstats #attribute reader (setter) which provides stats adjusted with equipment
+  def adjstats #attribute reader which provides stats adjusted with equipment
     stats={}
     self.attributes.each do |k,v| #loop through the attributes
       if k =~ /^stat_.*$/         #filter out only the stat_ attributes
@@ -101,6 +102,10 @@ class Character < ActiveRecord::Base
     stats["attack"]+=stats["strength"]*0.35.to_i
     stats["energy"]+=stats["agility"]*2.to_i
     stats
+  end
+  def hpen_max
+    self.current_hp=adjstats["health"]
+    self.current_en=adjstats["energy"]
   end
   def items
     self.inventory.items

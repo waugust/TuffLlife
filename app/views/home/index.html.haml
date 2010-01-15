@@ -1,13 +1,7 @@
-#context-menu
-  -@character.titles.each do |title|
-    %b
-    %ul
-      #{title.name} level #{title.level}
-      -title.skills.each do |skill|
-        %li
-          #{skill.name} level #{skill.level}
+=render :partial=>'skills'
 
 #content
-  This is the content of the page
-#some-ads-and-stuff
-  This is the right side
+  =@character.location.name
+
+=render :partial=>'right'
+
