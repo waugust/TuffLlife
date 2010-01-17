@@ -9,6 +9,8 @@ require File.join(File.dirname(__FILE__), 'boot')
 Rails::Initializer.run do |config|
   config.gem 'compass', :version => '>= 0.8.17'
   config.gem 'haml', :version => '>=2.2.17'
+  config.gem 'jrails'
+  config.gem 'honkster-jelly', :lib => 'jelly', :version => '0.8.13'
   # Settings in config/environments/* take precedence over those specified here.
   # Application configuration should go into files in config/initializers
   # -- all .rb files in that directory are automatically loaded.
