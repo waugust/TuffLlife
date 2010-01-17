@@ -10,6 +10,15 @@ class Character < ActiveRecord::Base
   belongs_to :location
   has_many :addictions
 
+  def skills
+    skills={}
+    self.titles.each do |title|
+      title.skills.each do |skill|
+        skills[skill.name]={:level=>skill.level,:description=>skill.description,:exp=>skill.exp}
+      end
+    end
+    skills
+  end
   def eqitems
     self.equipment.items
   end
