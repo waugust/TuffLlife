@@ -2,26 +2,45 @@
 @import blueprint/modules/scaffolding.sass
 @import compass/reset.sass
 @import partials/base.sass
+@import partials/tabs.sass
+@import partials/uicustom.sass
+@import partials/uicore.sass
 @import blueprint/modules/grid.sass
 @import compass/utilities.sass
+
 +blueprint
 // Remove the scaffolding when you're ready to start doing visual design.
 // Or leave it in if you're happy with how blueprint looks out-of-the-box
 +blueprint-scaffolding
 body.content
+  width: 950px
+
   .container
     +container
+    background: #C8C7C7
   #header
-    +horizontal-list
-  #header, #footer
+    
+  #header
     +column(24)
     :background = !menu_color
   #context-menu
-    +column(5)
+    +column(4)
     :background = !menu_color
   #content
-    +column(14)
+    +column(16)
   #rightside
-    +column(5, "last")
+    +column(4, "last")
     :background = !menu_color
-
+  .progressbar, #energy, #health
+    height: 15px
+    width: 80%
+    margin-left: auto
+    margin-right: auto
+  #exp
+    height: 20px
+    width: 80%
+    margin-left: auto
+    margin-right: auto
+  #energy
+    .caption
+      position: relative
