@@ -9,6 +9,7 @@ class CreateItems < ActiveRecord::Migration
       t.integer :amt, :null => false, :default => 0
       t.string :stats
       t.string :type
+      t.string :image
       t.timestamps
     end
   end

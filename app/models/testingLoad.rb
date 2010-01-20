@@ -3,7 +3,7 @@ def preload
    
 
     m=Player.new
-    loc=Location.new(:name=>"Baltimore",:description=>"a dump",:levelmin=>1,:levelmax=>10)
+    loc=Location.new(:name=>"Baltimore",:description=>"a dump",:levelmin=>1,:levelmax=>10,:image=>"images/locations/baltimore_fog_400_300.png")
     npc=Npc.new(:name=>"npc1")
     loc.npcs<<npc
     ch=Character.new(:name=>"Wojtek")
@@ -98,6 +98,7 @@ myTitle.requirements<<myReq
   equipment.save
   ch.equipment=equipment
   ch.bank=myBank
+  ch.setXP
   ch.save
   m.save
   

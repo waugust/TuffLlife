@@ -123,6 +123,7 @@ ActiveRecord::Schema.define(:version => 20100112165107) do
     t.integer  "amt",         :default => 0, :null => false
     t.string   "stats"
     t.string   "type"
+    t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
   end
@@ -132,6 +133,7 @@ ActiveRecord::Schema.define(:version => 20100112165107) do
     t.string   "description", :default => "0"
     t.integer  "levelmin",    :default => 0
     t.integer  "levelmax",    :default => 0
+    t.string   "image"
     t.datetime "created_at"
     t.datetime "updated_at"
   end

@@ -5,6 +5,7 @@ class CreateLocations < ActiveRecord::Migration
       t.string :description, :default => 0
       t.integer :levelmin, :default => 0
       t.integer :levelmax, :default => 0
+      t.string :image
       t.timestamps
     end
   end

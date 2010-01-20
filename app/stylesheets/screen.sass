@@ -2,9 +2,7 @@
 @import blueprint/modules/scaffolding.sass
 @import compass/reset.sass
 @import partials/base.sass
-@import partials/tabs.sass
 @import partials/uicustom.sass
-@import partials/uicore.sass
 @import blueprint/modules/grid.sass
 @import compass/utilities.sass
 
@@ -14,33 +12,29 @@
 +blueprint-scaffolding
 body.content
   width: 950px
-
+  margin-left: auto
+  margin-right: auto
+  background: black
   .container
     +container
     background: #C8C7C7
   #header
     
   #header
-    +column(24)
-    :background = !menu_color
-  #context-menu
-    +column(4)
+    +column(25)
     :background = !menu_color
   #content
-    +column(16)
+    +column(19)
   #rightside
-    +column(4, "last")
+    +column(6, "last")
     :background = !menu_color
   .progressbar, #energy, #health
     height: 15px
     width: 80%
     margin-left: auto
     margin-right: auto
-  #exp
+  #exp_pbImage
     height: 20px
     width: 80%
     margin-left: auto
     margin-right: auto
-  #energy
-    .caption
-      position: relative

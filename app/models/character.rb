@@ -9,7 +9,8 @@ class Character < ActiveRecord::Base
   belongs_to :player
   belongs_to :location
   has_many :addictions
-
+  has_many :skills, :through => :titles
+  
   def skills
     skills={}
     self.titles.each do |title|
