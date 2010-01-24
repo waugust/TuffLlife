@@ -11,7 +11,7 @@ class Equipment < ActiveRecord::Base
     slots={}
     self.attributes.each do |slot,val|
       if slot !~ /^.*id|at$/ && val
-        slots[slot]=val[:name]
+        slots[slot]=val
       end
     end
     slots

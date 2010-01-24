@@ -6,15 +6,10 @@
     %script{:src=>"javascripts/ui.core.js", :type => "text/javascript"}
     %script{:src=>"javascripts/ui.tabs.js", :type => "text/javascript"}
     %script{:src=>"javascripts/jquery.progressbar.min.js", :type => "text/javascript"}
+    %script{:src=>"javascripts/jquery.jstore-min.js", :type => "text/javascript"}
     %script{:src=>"javascripts/home.js", :type=>"text/javascript"}
     %script
-      $(document).ready(function()
-      {
-      maintabs();
-      expbar(#{@character.exp},#{@character.maxexp});
-      skillbars(#{@character.id});
-      vitalbars(#{@character.id});
-      });
+     
 
     %meta{ :content => "text/html;charset=UTF-8", "http-equiv" => "content-type" }
     %title
@@ -24,6 +19,6 @@
       = flash[:notice]
     #container
       
-    =render :partial=>'header'
-    = yield
-      
+      =render :partial=>'header'
+      = yield
+

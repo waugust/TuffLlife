@@ -3,7 +3,8 @@ class CreateInventories < ActiveRecord::Migration
     create_table :inventories do |t|
       t.integer :character_id
       t.integer :capacity, :null => false, :default => 5
-      t.string :description, :null => false
+      t.string :name, :null => false
+      t.integer :credits, :null => false, :default => 0
       t.timestamps
     end
   end

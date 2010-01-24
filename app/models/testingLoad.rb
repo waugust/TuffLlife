@@ -38,7 +38,7 @@ def preload
         whiskey=Drug.new(:name=>"Whiskey",:description=>          "a bottle of cheap whiskey",:amt=>    1,:duration=>20,:grade=>"Cheap",:stats=>{:stamina=>3,:intellect=>-3})
         whiskey.save
         weap_items<<["Bat",             "2hand",                          "simple wooden bat",        20,      "Cheap",{:attack=>2}]
-        weap_items<<["Knife"            ,"rhand",                          "rusty kitchen knife",           20,         "Cheap",{:attack=>1}]
+        weap_items<<["Knife"            ,"rhand",                          "rusty kitchen knife",           20,         "Cheap",{:attack=>1},"images/items/rusty_knife.png"]
         weap_items<<["Brass Knuckles",  "2hand",                          "brass knuckles",                20,         "Cheap",{:attack=>2}]
 
         weap_items.each do |wep|
@@ -49,13 +49,15 @@ def preload
             w.amt=wep[3]
             w.grade=wep[4]
             w.stats=wep[5]
+            w.image=wep[6]
           end
           weapon.save
         end
 
-        armor_items<<["Plaid Shirt",      "chest",                          "simple plaid shirt",            20,          "Cheap", {:defense=>1}]
-        armor_items<<["Faded jeans",      "pants",                          "old pair of faded blue jeans",  20,          "Cheap", {:defense=>1}]
-        armor_items<<["Baseball Cap",       "head",                          "minor league basball cap",      20,          "Cheap", {:defense=>1}]
+        armor_items<<["Plaid Shirt",      "chest",                          "simple plaid shirt",            20,          "Cheap", {:defense=>1},"images/items/plaid_shirt.png"]
+        armor_items<<["Denim Shirt",      "chest",                          "simple denim shirt",            20,          "Cheap", {:defense=>1},"images/items/denim_shirt.png"]
+        armor_items<<["Faded jeans",      "pants",                          "old pair of faded blue jeans",  20,          "Cheap", {:defense=>1},""]
+        armor_items<<["Baseball Cap",       "head",                          "minor league basball cap",      20,          "Cheap", {:defense=>1},""]
 
 
         armor_items.each do |arm|
@@ -66,6 +68,7 @@ def preload
             a.amt=arm[3]
             a.grade=arm[4]
             a.stats=arm[5]
+            a.image=arm[6]
           end
           armor.save
         end
@@ -91,7 +94,7 @@ myTitle.requirements<<myReq
     myskill.save
   end
   myBank=Bank.new(:name=>"1st Bank")
-  myinv=Inventory.new(:description=>"brown sack")
+  myinv=Inventory.new(:name=>"brown sack")
   ch.inventory=myinv
   ch.titles<<myTitle
   equipment=Equipment.new

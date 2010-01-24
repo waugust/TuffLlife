@@ -5,7 +5,7 @@
 # Make sure the secret is at least 30 characters and all random, 
 # no regular words or you'll be exposed to dictionary attacks.
 ActionController::Base.session = {
-  :key         => '_tufflife_session',
+  :key         => '_@pp0@pp_tuff_life',
   :secret      => '3281d8932b36c866b9b8367e85553bd1fb49e8e00c77348d7efbc91f388e93eabe24d339ade64f9ef947bc510febff422f104d68e7e05b0c9d49f6654f3b05d7'
 }
 

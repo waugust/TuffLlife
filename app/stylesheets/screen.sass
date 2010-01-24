@@ -3,6 +3,7 @@
 @import compass/reset.sass
 @import partials/base.sass
 @import partials/uicustom.sass
+@import partials/uidialog.sass
 @import blueprint/modules/grid.sass
 @import compass/utilities.sass
 
@@ -19,10 +20,20 @@ body.content
     +container
     background: #C8C7C7
   #header
-    
-  #header
     +column(25)
     :background = !menu_color
+    table
+      th.chname
+        width: 10%
+      th.chlvl
+        width: 10%
+      td.exp
+        width: 60%
+      td.exp_value
+        width: 20%s
+    #exp
+      height: 15px
+      margin-right: auto
   #content
     +column(19)
   #rightside
@@ -38,3 +49,24 @@ body.content
     width: 80%
     margin-left: auto
     margin-right: auto
+  .itemDialog
+    +uidialog
+    :background = !menu_color
+    border: 2px black
+  #item_menu
+    :background = !menu_color
+    cursor: pointer
+    border: inset black 2px
+  .item
+    cursor: pointer
+  .item_menu_mouseover
+    background: yellow
+    text-decoration:underline
+    border-bottom: 2px solid black
+  #main
+    height: 300px
+  #equipment_table
+    table
+      border: 2px solid black
+      width: 100px
+
