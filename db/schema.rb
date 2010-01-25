@@ -104,7 +104,8 @@ ActiveRecord::Schema.define(:version => 20100112165107) do
   create_table "inventories", :force => true do |t|
     t.integer  "character_id"
     t.integer  "capacity",     :default => 5, :null => false
-    t.string   "description",                 :null => false
+    t.string   "name",                        :null => false
+    t.integer  "credits",      :default => 0, :null => false
     t.datetime "created_at"
     t.datetime "updated_at"
   end

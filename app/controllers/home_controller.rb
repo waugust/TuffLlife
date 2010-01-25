@@ -21,7 +21,16 @@ class HomeController < ApplicationController
       istats+="#{k.to_s.capitalize}: #{v.to_s}"
     end
     
-    itemhash={:item_id=>item.id,:name=>item.name,:slot=>item.slot,:description=>item.description,:grade=>item.grade,:value=>item.amt,:stats=>istats,:item_type=>item.type,:item_image=>item.image}
+    itemhash={:item_id=>item.id,
+      :name=>item.name,
+      :slot=>item.slot,
+      :description=>item.description,
+      :grade=>item.grade,
+      :value=>item.amt,
+      :stats=>istats,
+      :item_type=>item.type,
+      :item_image=>item.image}
+
     render :json => itemhash
   end
   def location
@@ -68,11 +77,24 @@ class HomeController < ApplicationController
     response={:status=>'OK'}
     render :json => response
   end
-    def unequip_item
+  def unequip_item
     character = Character.find(session[:character])
     item = Item.find(params[:itemid])
     item.unequip(character)
     response={:status=>'OK'}
     render :json => response
+  end
+  #begin new plan
+  def get_inventory
+    character=Character.find(session[:character])
+    inv = {}
+    items = []
+    character.inventory.items.each_with_index do |item,index|
+      inv["items"]=items.push({:name=>item.name,:item_id=>item.id,:stats=>item.stats,:image=>item.image,:description=>item.description})
+    end
+    inv["capacity"]=character.inventory.capacity
+    inv["credits"]=character.inventory.credits
+    inv["name"]=character.inventory.name
+    render :json => inv
   end
 end
