@@ -3,10 +3,6 @@ class HomeController < ApplicationController
     @character = Character.find(1)
     session[:character]=@character.id
   end
-  def skills
-    @character = Character.find(session[:character])
-    render :json => @character.skills
-  end
   def vitals
     @character = Character.find(session[:character])
     vitalshash={}
@@ -85,16 +81,57 @@ class HomeController < ApplicationController
     render :json => response
   end
   #begin new plan
-  def get_inventory
+    def charStats
+    character = Character.find(session[:character])
+      response={}
+      response["exp"]={:current=>character.exp,:max=>character.maxexp}
+      response["health"]={:current=>character.current_hp,:max=>character.adjstats["health"]}
+      response["energy"]={:current=>character.current_en,:max=>character.adjstats["energy"]}
+      render :json => response
+    end
+    def skills
+    character = Character.find(session[:character])
+    response={}
+    skills=[]
+    character.titles.each_with_index do |title,index|
+      title.skills.each do |skill|
+        response[title.name]=skills.push({:current_exp=>skill.current_exp,:max_exp=>skill.max_exp,:description=>skill.description,:name=>skill.name})
+      end
+    end
+    render :json => response
+  end
+  def get_stored_items
     character=Character.find(session[:character])
+    location = params[:loc]
     inv = {}
     items = []
-    character.inventory.items.each_with_index do |item,index|
-      inv["items"]=items.push({:name=>item.name,:item_id=>item.id,:stats=>item.stats,:image=>item.image,:description=>item.description})
+    if location=='inventory' then
+      col = character.inventory.items
+      store = character.inventory
+    else
+      col = character.bank.items
+      store = character.bank
     end
-    inv["capacity"]=character.inventory.capacity
-    inv["credits"]=character.inventory.credits
-    inv["name"]=character.inventory.name
+
+    col.each_with_index do |item,index|
+      statsHTML = ''
+      item.stats.each do |stat, value|
+        statsHTML = "#{stat}: #{value}<br>"
+      end
+      inv["items"]=items.push({
+          :slot=>item.slot,
+          :grade=>item.grade,
+          :value=>item.amt,
+          :name=>item.name,
+          :item_id=>item.id,
+          :stats=>statsHTML,
+          :image=>item.image,
+          :description=>item.description,
+          :item_type=>item.type})
+    end
+    inv["capacity"]=store.capacity
+    inv["credits"]=store.credits
+    inv["name"]=store.name
     render :json => inv
   end
 end

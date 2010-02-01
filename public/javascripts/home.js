@@ -1,11 +1,11 @@
  $(document).ready(function()
 {
-  //get_inventory();
+  get_inventory();
   mainback();
   maintabs();
-  expbar();
-  skillbars();
-  vitalbars();
+ expbar();
+skillbars();
+vitalbars();
   itembind();
   
 });

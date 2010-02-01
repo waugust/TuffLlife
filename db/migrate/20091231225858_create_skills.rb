@@ -4,7 +4,8 @@ class CreateSkills < ActiveRecord::Migration
       t.integer :title_id
       t.string :name, :null => false
       t.integer :level, :null => false, :default => 1
-      t.integer :exp, :null => false, :default => 0
+      t.integer :current_exp, :null => false, :default => 0
+      t.integer :max_exp, :null => false, :default => 100
       t.string :description, :null => false
       t.timestamps
     end

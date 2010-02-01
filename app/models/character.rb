@@ -11,11 +11,11 @@ class Character < ActiveRecord::Base
   has_many :addictions
   has_many :skills, :through => :titles
   
-  def skills
+  def short_skills
     skills={}
     self.titles.each do |title|
       title.skills.each do |skill|
-        skills[skill.name]={:level=>skill.level,:description=>skill.description,:exp=>skill.exp}
+        skills[skill.name]={:level=>skill.level,:description=>skill.description,:current_exp=>skill.current_exp,:max_exp=>skill.max_exp}
       end
     end
     skills
@@ -97,7 +97,7 @@ class Character < ActiveRecord::Base
     modified=(value-10)/2
     return modified
   end
-  def adjstats #attribute reader which provides stats adjusted with equipment
+  def adjstats 
     stats={}
     self.attributes.each do |k,v| #loop through the attributes
       if k =~ /^stat_.*$/         #filter out only the stat_ attributes
@@ -108,9 +108,11 @@ class Character < ActiveRecord::Base
       end
     end
     stats["health"]+=stats["stamina"]*10
+    self.current_hp+=stats["stamina"]*10
     stats["defense"]+=stats["agility"]*0.35.to_i
     stats["attack"]+=stats["strength"]*0.35.to_i
     stats["energy"]+=stats["agility"]*2.to_i
+    self.current_en+=stats["agility"]*2.to_i
     stats
   end
   def hpen_max
