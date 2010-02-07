@@ -134,4 +134,47 @@ class HomeController < ApplicationController
     inv["name"]=store.name
     render :json => inv
   end
+  def getItems
+    character=Character.find(session[:character])
+    response={}
+    stats={}
+    items=[]
+
+    response["identity"]="id"
+    response["label"]="name"
+
+    character.inventory.items.each do |item|
+      item.stats.each do |stat,value|
+        stats[stat]=value
+      end
+      response["items"]=items.push({
+          :slot=>item.slot,
+          :grade=>item.grade,
+          :value=>item.amt,
+          :name=>item.name,
+          :item_id=>item.id,
+          :stats=>stats,
+          :image=>item.image,
+          :description=>item.description,
+          :item_type=>item.type,
+          :location=>"inventory"})
+    end
+    character.bank.items.each do |item|
+      item.stats.each do |stat,value|
+        stats[stat]=value
+      end
+      response["items"]=items.push({
+          :slot=>item.slot,
+          :grade=>item.grade,
+          :value=>item.amt,
+          :name=>item.name,
+          :item_id=>item.id,
+          :stats=>stats,
+          :image=>item.image,
+          :description=>item.description,
+          :item_type=>item.type,
+          :location=>"bank"})
+    end
+    render :json => response
+  end
 end
