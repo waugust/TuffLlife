@@ -33,34 +33,7 @@ class Character < ActiveRecord::Base
     return val
   end
 
-  def attack(mytarget)
-    target_hp=mytarget.health
-
-    targetThread=Thread.new {mytarget.attackback(self)}
-
-
-    if Thread.current["fighting"]
-      if self.stat_health>10
-        while target_hp>0
-        unless self.miss?(mytarget)
-          dmg=self.hit.to_i
-          target_hp-=dmg
-          puts "#{mytarget.name} hit for #{dmg}, bringing health down to #{target_hp}"
-        else
-          puts "You missed"
-        end
-        end
-        puts "Target defeated"
-        mytarget.destroy
-        self.location.npcs.reload
-      else
-        puts "You are too weak to continue the fight"
-      end
-    end
-
-
-    self.save
-  end
+  
   def miss?(mytarget)
     mskill=self.titles[0].skills.find(:all, :conditions => {:name=>"melee"}).level
     if mskill<=mytarget.defense
@@ -122,7 +95,5 @@ class Character < ActiveRecord::Base
   def items
     self.inventory.items
   end
-  def showstats
-    printf self.adjstats.to_yaml
-  end
+
 end
