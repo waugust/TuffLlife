@@ -56,44 +56,7 @@ class Item < ActiveRecord::Base
       #TODO
     end
   end
-  def equip(char)
 
-    
-      #retreive the string value of the equipment slot
-      eq_slot=char.equipment.attribute_for_inspect(self.slot.downcase.to_sym)
-      if eq_slot
-       char.equipment.attributes={self.slot.downcase.to_sym => self}
-      else #if the slot already has an item equipped, move it to inventory
-       Item.find_by_id(eq_slot.to_i).unequip
-       char.equipment.attributes={self.slot.to_sym => self}
-      end
-      if char.inventory.items.include?(self)
-        char.inventory.items.delete(self)
-      else
-        char.bank.items.delete(self)
-      end
-      char.bank.save
-      char.equipment.save
-      char.addequipstats
-      char.save
-    
-  end
-  def unequip(char)
-    if char.inventory.room>0
-      char.attributes.each do |stat,val|
-        if stat.to_s =~ /^stat_.*$/
-          amt=val-self.attribute_for_inspect(stat.to_sym).to_i
-          self.attributes={stat.to_sym=>amt}
-        end
-      end
-      char.inventory.items<<self
-      char.equipment.delete(self)
-      char.save
-      else
-        #TODO - unquip when inventory is full action
-        return false
-    end
-  end
 
 end
 
