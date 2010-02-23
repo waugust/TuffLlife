@@ -4,7 +4,8 @@ module Equipables
   def equip(char)
     #retreive the string value of the equipment slot
     eq_slot=char.equipment[self.slot.downcase.to_sym]
-    if eq_slot != "nil"
+    
+    if eq_slot != nil
       Item.find(eq_slot[:id]).unequip(char)
     end #if the slot already has an item equipped, move it to inventory
     char.equipment[self.slot.to_sym]={:id=>self.id,:slot=>self.slot,:stats=>self.stats,:name=>self.name}
