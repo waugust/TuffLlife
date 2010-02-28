@@ -1,14 +1,15 @@
 #header.loading
   %table.headbars
     %tr
-      %th{:colspan=>3}
+      %th{:colspan=>4}
         =@character.name
-      %th.chalvl_label
-        Level:
       %th.charlvl
+        Level: 
         =@character.level
     %tr
-      %td{:colspan=>'5'}
+      %td
+        Experience:
+      %td{:colspan=>'4'}
         #exp
       %td#expval
       
