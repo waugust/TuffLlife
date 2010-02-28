@@ -3,7 +3,7 @@ class Inventory < ActiveRecord::Base
   belongs_to :character
 
   def room
-    self.capacity-self.items.count
+    self.capacity-self.items.size
   end
 
 end
