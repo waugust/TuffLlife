@@ -1,6 +1,7 @@
 dojo.provide("tufflife.controllers.utils.itemUtils")
 dojo.require("tufflife.data")
 
+
 var setItemCtls = function(item,id){
   // alert(item.toJson)
       var stats = []
@@ -50,21 +51,34 @@ var setItemCtls = function(item,id){
       if(loc=="equipment")
           {
             menu.addChild(new dijit.MenuItem({
-                label: "Unequip"
+                label: "Unequip",
+                onClick: function(){dojo.publish("itemUnequip",[item])}
             }));
-          }else
-              {
-              menu.addChild(new dijit.MenuItem({
-                label: "Equip"
-            }));
-        }
+      }else if (loc=="inventory")
+          {
+          menu.addChild(new dijit.MenuItem({
+            label: "Equip",
+            onClick: function(){dojo.publish("itemEquip",[item])}
+        }));
+          menu.addChild(new dijit.MenuItem({
+              label: "Deposit",
+              onClick: function(){dojo.publish("itemDeposit",[item])}
+          }));
+          menu.addChild(new dijit.MenuItem({
+              label: "Trash",
+              onClick: function(){dojo.publish("itemTrash",[item])}
+      }));
 
-      menu.addChild(new dijit.MenuItem({
-          label: "Deposit"
-      }));
-      menu.addChild(new dijit.MenuItem({
-          label: "Trash"
-      }));
+      }else // bank
+      {
+         menu.addChild(new dijit.MenuItem({
+           label: "Withdrawl",
+           onClick: function(){dojo.publish("itemWithdrawl",[item])}
+       }));
+
+      };
+
+
       menu.startup();
 
 }
