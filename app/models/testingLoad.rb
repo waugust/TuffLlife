@@ -55,9 +55,13 @@ def preload
         end
 
         armor_items<<["Plaid Shirt",      "chest",                          "simple plaid shirt",            20,          "Cheap", {:defense=>1},"images/items/plaid_shirt.png"]
+        armor_items<<["Gray Stamina Sweater",      "chest",                          "nice sweater!",            100,          "Decent", {:defense=>2,:stamina=>2},"images/items/gray_stamina_sweater.png"]
+        armor_items<<["Gray sweat shirt",      "chest",                          "simple gray sweat shirt",            20,          "Cheap", {:defense=>1},"images/items/gray_sweat_shirt.png"]
+        armor_items<<["White Tee-Shirt",      "chest",                          "simple white tee-shirt",            20,          "Cheap", {:defense=>1},"images/items/white_teeshirt.png"]
+        armor_items<<["Green Tee-Shirt",      "chest",                          "simple green tee-shirt",            20,          "Cheap", {:defense=>1},"images/items/green_teeshirt.png"]
         armor_items<<["Denim Shirt",      "chest",                          "simple denim shirt",            20,          "Cheap", {:defense=>1},"images/items/denim_shirt.png"]
-        armor_items<<["Faded jeans",      "pants",                          "old pair of faded blue jeans",  20,          "Cheap", {:defense=>1},""]
-        armor_items<<["Baseball Cap",       "head",                          "minor league basball cap",      20,          "Cheap", {:defense=>1},""]
+        armor_items<<["Faded jeans",      "pants",                          "old pair of faded blue jeans",  20,          "Cheap", {:defense=>1},"images/items/faded_jeans.png"]
+        armor_items<<["Baseball Cap",       "head",                          "minor league basball cap",      20,          "Cheap", {:defense=>1},"images/items/baseball_cap.png"]
 
 
         armor_items.each do |arm|
