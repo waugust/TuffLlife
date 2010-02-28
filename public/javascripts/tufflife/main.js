@@ -6,6 +6,7 @@ dojo.require("dijit.ProgressBar");
 dojo.require("dojo.fx");
 dojo.require("dijit.layout.AccordionContainer");
 
+
  (function(){
 //dojo.addOnLoad(function(){
 
@@ -32,7 +33,7 @@ dojo.require("dijit.layout.AccordionContainer");
         rightPane: new dijit.layout.ContentPane({
           id: "rightPane",
           region: "right",
-          style: "width: 200px",
+          style: "width: 230px",
           content: dojo.query('#rightside')
         }),
         tabContainer: new dijit.layout.TabContainer({
@@ -48,18 +49,55 @@ dojo.require("dijit.layout.AccordionContainer");
              title:"Skills",id:"skillsTab",
              content: dojo.query('#skills #titles')
          }),
-         inventoryTab : new dijit.layout.ContentPane({
-            title:"Inventory",id:"inventoryTab",
-            content: dojo.query('#inventory')
+         inventoryTab : new dijit.layout.BorderContainer({
+            title:"Inventory",id:"inventoryTab",style:"width:400px"
          }),
+         leftinventoryPane: new dijit.layout.ContentPane({
+            region: "left",
+            style: "width: 225px",
+            content: dojo.query('#inventory_left')
+         }).placeAt(dijit.byId('inventoryTab')),
+         rightinventoryPane: new dijit.layout.ContentPane({
+            region: "right",
+            style: "width: 150px",
+            id: 'rightinventorytab',
+            content: dojo.byId('inventory_right')
+         }).placeAt(dijit.byId('inventoryTab')),
          equipmentTab : new dijit.layout.ContentPane({
             title:"Equipment",id:"equipmentTab",
             content: dojo.query('#equipment')
          }),
-         bankTab : new dijit.layout.ContentPane({
-            title:"Bank",id:"bankTab",
-            content: dojo.query('#bank')
+         bankTab : new dijit.layout.BorderContainer({
+            title:"Bank",id:"bankTab",style:"width:400px"
          }),
+         leftbankPane: new dijit.layout.ContentPane({
+            region: "left",
+            style: "width: 225px",
+            content: dojo.byId('bank_left')
+         }).placeAt(dijit.byId('bankTab')),
+         rightbankPane: new dijit.layout.ContentPane({
+            region: "right",
+            style: "width: 150px",
+            id: 'rightbanktab',
+            content: dojo.query('#bank_right')
+         }).placeAt(dijit.byId('bankTab')),
+        vitals: function(){
+            dojo.empty('stats')
+            tufflife.data.vitals.fetch({
+                onItem: function(item){
+                    dojo.create("table",{id:"vitalsTable"},'stats','first');
+                    dojo.create("tr",{id:"vitalsTitleRow"},'vitalsTable','first');
+                    dojo.create("td",{id:"vitalsLable",colspan:2,innerHTML:"Stats"},'vitalsTitleRow','first');
+                    var attrs = tufflife.data.vitals.getAttributes(item);
+                    dojo.forEach(attrs, function(attr,index){
+                        var val = tufflife.data.vitals.getValue(item,attr);
+                        dojo.create("tr",{id:"vitalsRow"+index,class:"vitalsRow"},"vitalsTitleRow","after");
+                        dojo.create("td",{id:attr+"lable",class:"lable",innerHTML:attr},"vitalsRow"+index,"first");
+                        dojo.create("td",{id:attr+"_cell",innerHTML:val,class:"vitalsRow"},attr+"lable","after");
+                    });
+                }
+            })
+        },
         createSkillbars: function(){
              
              
@@ -78,7 +116,7 @@ dojo.require("dijit.layout.AccordionContainer");
                      titleContainer.addChild(_titleAcc);
                      titleContainer.startup();
                         var skillTable = _title+'Table';
-                       dojo.create("table",{id:skillTable},_title+'Pane',"first")
+                       dojo.create("table",{id:skillTable,class:"skillTable"},_title+'Pane',"first")
                        var rownum = 1;
                    tufflife.data.skills.fetch({query: {title:_title},
                         onComplete: function(items,response){
@@ -132,6 +170,7 @@ dojo.require("dijit.layout.AccordionContainer");
             this.appContainer.startup();
             this.appContainer.layout();
             this.createSkillbars();
+            this.vitals();
  
 dojo.query('.loading').removeClass('loading');
          }
