@@ -8,6 +8,8 @@ dojo.provide("tufflife.controllers.character");
           exp: 0,
           health:0,
           energy:0,
+          health_maxed: false,
+          energy_maxed: false,
           get: function(stat){
               var _stat;
 
@@ -20,27 +22,65 @@ dojo.provide("tufflife.controllers.character");
                 return _stat;
           },
           set: function(stat){
-              if(stat.max){tufflife.controllers.character.stats[stat.type]=stat.max}
+              if(stat.max)
+                {
+                    tufflife.controllers.character.stats[stat.type]=stat.max
+                }
 
-              var _current = stat.current;
               var _max = stat.max || this[stat.type];
               var _stat = stat.type;
-              if(!stat.max){
-              //update item store
-              tufflife.data.stats.fetchItemByIdentity({
-                  identity: stat.type,
-                  onItem: function(item,response){
-                      tufflife.data.stats.setValue(item,'current',stat.current);
-
+              var _current = stat.current || this.get(stat.type);
+              var increase = stat.increase || 0;
+              if(!stat.init)
+                  {
+              if(increase)
+                  {
+                      if(_stat!='exp')
+                          {
+                           var end_value = _current+increase
+                           if (end_value>_max){
+                               end_value -= _max
+                              increase -= end_value
+                            }
+                          }
+                      _current+=increase
+                      stat.current=_current
                   }
-              })
-                tufflife.data.stats.save();
-              };
-              dojo.byId(_stat+'val').innerHTML=_current+'/'+_max
-              dijit.byId(_stat+'ProgBar').update({
-                  maximum: _max,
-                  progress: _current
-              })
+                  var check = _current>_max;
+
+              if(check){stat.current=_max;_current=_max}
+              if (_current<=_max){
+                  //update item store
+                  tufflife.data.stats.fetchItemByIdentity({
+                      identity: stat.type,
+                      onItem: function(item){
+                          if(stat.current){
+                          tufflife.data.stats.setValue(item,'current',_current);
+                          }
+                          if(stat.max){
+                              tufflife.data.stats.setValue(item,'max',_max);
+                          }
+                      }
+                  })
+                  
+               //   };
+
+                  dojo.byId(_stat+'val').innerHTML=_current+'/'+_max
+                  dijit.byId(_stat+'ProgBar').update({
+                      maximum: _max,
+                      progress: _current
+                  });
+
+              }
+                  }
+              else
+                  {
+                     dojo.byId(_stat+'val').innerHTML=_current+'/'+_max
+                          dijit.byId(_stat+'ProgBar').update({
+                              maximum: _max,
+                              progress: _current
+                          });
+                  }
           }
         },
         skills: {
@@ -80,14 +120,18 @@ dojo.provide("tufflife.controllers.character");
                 identity:stat,
                 onItem: function(item,response){
                     var _stat = {};
+                    _stat.init = true;
                     _stat.current = tufflife.data.stats.getValue(item,'current');
-                    _stat.type = stat
+                    _stat.type = stat;
                     _stat.max = tufflife.data.stats.getValue(item,'max');
                     that.stats.set(_stat);
                 }
                     
             });
             });
+
+            tufflife.data.functions.checkMaxed('health');
+            tufflife.data.functions.checkMaxed('energy');
         }})
 
   
