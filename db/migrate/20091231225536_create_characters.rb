@@ -16,20 +16,29 @@ class CreateCharacters < ActiveRecord::Migration
       t.integer :exp, :null => false, :default => 0
       t.integer :maxexp, :null => false, :default => 0
       t.integer :level, :null => false, :default => 1
-      t.integer :stat_health, :null => false, :default => 100
-      t.integer :stat_energy, :null => false, :default => 50
-      t.integer :credits, :null => false, :default => 200
-      t.integer :stat_karma, :null => false, :default => 0
-      t.integer :stat_luck, :null => false, :default => 0
-      t.integer :stat_strength, :null => false, :default => 10
-      t.integer :stat_intellect, :null => false, :default => 10
-      t.integer :stat_agility, :null => false, :default => 10
-      t.integer :stat_stamina, :null => false, :default => 10
-      t.integer :stat_attack, :null => false, :default => 1
-      t.integer :stat_defense, :null => false, :default => 1
-      t.string :adjstats
+      t.integer :base_health, :null => false, :default => 100
+      t.integer :base_energy, :null => false, :default => 50
+      t.integer :base_karma, :null => false, :default => 0
+      t.integer :base_luck, :null => false, :default => 0
+      t.integer :base_strength, :null => false, :default => 10
+      t.integer :base_intellect, :null => false, :default => 10
+      t.integer :base_agility, :null => false, :default => 10
+      t.integer :base_stamina, :null => false, :default => 10
+      t.integer :base_attack, :null => false, :default => 1
+      t.integer :base_defense, :null => false, :default => 1
       t.integer :current_hp, :null => false, :default => 100
       t.integer :current_en, :null => false, :default => 50
+      t.integer :adj_health, :null => false, :default => 100
+      t.integer :adj_energy, :null => false, :default => 50
+      t.integer :adj_karma, :null => false, :default => 0
+      t.integer :adj_luck, :null => false, :default => 0
+      t.integer :adj_strength, :null => false, :default => 10
+      t.integer :adj_intellect, :null => false, :default => 10
+      t.integer :adj_agility, :null => false, :default => 10
+      t.integer :adj_stamina, :null => false, :default => 10
+      t.integer :adj_attack, :null => false, :default => 1
+      t.integer :adj_defense, :null => false, :default => 1
+
       t.timestamps
     end
   end
