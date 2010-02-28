@@ -20,18 +20,29 @@ dojo.require("dijit.Tooltip");
                 credits: 0,
                 items: 0
             },
-         getItems: function(loc, cap, item_count){
+         setItemCount: function(loc,count){
+            this[loc].items=count;
+         },
+         getItems: function(cfg){
+                    var loc = cfg.loc
+                    var cap = cfg.cap || this[loc].capacity
+                    var item_count = cfg.item_count || this[loc].items
+
                     // if the capacity property hasn't been set yet use the parameter'
-                    var capacity = this[loc].capacity==0?cap:this[loc].capacity;
+                    var capacity = this[loc].capacity==0?cfg.cap:this[loc].capacity;
+
                     //closure
                     var that = this;
                     var itemCount = item_count;
                     //set the item count property for the storate location (inventory or bank)
                     that[loc].items=itemCount;
-                    var emptySlots = capacity - itemCount;
+
                     //index for the item id
-                    var startIndex = itemCount+1;
-                    if(item_count>0){
+
+                    for(var i=0;i<capacity;i++){
+                            dojo.create("img",{src:"images/emptyslot.png", id:loc+"Slot"+i},loc+'_right',"last");
+                        };
+                    if (item_count>0){
                     tufflife.data.itemstore.fetch({
                         query: {location:loc},
                         onError: function(error){
@@ -40,50 +51,65 @@ dojo.require("dijit.Tooltip");
                         },
                         onComplete: function(items,response){
 
-                            var stats=[];
-                            for(var i=0;i<emptySlots;i++){
-                                dojo.create("img",{src:"images/emptyslot.png", id:loc+"Slot"+startIndex},loc,"last");
-                                startIndex++;
-                            };
                              dojo.forEach(items,function(item,index){
                                var image = tufflife.data.itemstore.getValue(item,"image");
-                        
-                               var slot = loc+"Slot"+(parseInt(index)+1);
-                               var itemimg = dojo.create("img",{
-                                  src:image,
-                                  id:slot
-                                },loc,"first");
-                                 //alert("in storage.js >> "+item.toJSON)
-                                setItemCtls(item,slot);
+
+                               var imgNode = dojo.query('#'+loc+'_right [src=\'images/emptyslot.png\']')[0]
+                               
+                               var imgId = dojo.attr(imgNode,'id')
+
+                               dojo.attr(imgNode,'src',image)
+
+                                setItemCtls(item,imgId);
                              });
                           }
 
                     });
                     }
-                    else{
 
-                    for(var i=0;i<emptySlots;i++){
-                            dojo.create("img",{src:"images/emptyslot.png", id:loc+"Slot"},loc,"last");
-                        };
-                    }
+                    
+
          },
         setHeaderAndCredits: function(cfg){
-              var loc = cfg.loc || '';
-              var name = cfg.name || '';
-              var credits = cfg.credits || '';
-              var room = cfg.capacity - this[loc].items;
-              dojo.create("table",{id:loc+'Header'},loc,"first");
-              dojo.create("tr",{id:loc+'HeaderRow'},loc+'Header',"first");
-              dojo.create("td",{id:loc+"NameCell",innerHTML:name},loc+'HeaderRow',"first");
-              dojo.create("td",{id:loc+"RoomCell",innerHTML: room+'/'+cfg.capacity},loc+'HeaderRow',"last");
+              var loc = cfg.loc;
+              var name = cfg.name || this[loc].name;
+              var credits = cfg.credits || this[loc].credits;
+              var capacity = cfg.capacity || this[loc].capacity;
+              var room = capacity - this[loc].items;
+
+              dojo.create("table",
+                {id:loc+'Header',
+                style:'width:90%;font-size:120%'}
+                ,loc+'_left',"first");
+              dojo.create("tr",
+                {id:loc+'HeaderRow1'}
+                ,loc+'Header',"first");
+              dojo.create("td",
+                {id:loc+"NameCell",
+                innerHTML:name,
+                colspan: 2,
+                style:"background-color:gray;color:white;font-size:150%;text-align:center;border-color:gray;border-style:ridge"}
+                ,loc+'HeaderRow1',"last");
+              dojo.create("tr",
+                {id:loc+'HeaderRow2'}
+                ,loc+'HeaderRow1',"after");
+              dojo.create("td",
+                {id:loc+"RoomCellLabel",
+                innerHTML: "Free Space: "}
+                ,loc+'HeaderRow2',"first");
+              dojo.create("td",
+                {id:loc+"RoomCell",
+                innerHTML: room+'/'+capacity}
+                ,loc+'HeaderRow2',"last");
               if (loc=='bank')
               {
-                  dojo.create("td",{id:loc+"DepositCreditsLabelCell",innerHTML:"Deposit"},loc+'HeaderRow',"last");
-                  dojo.create("td",{id:loc+"DepositCreditsCell"},loc+'HeaderRow',"last");
+                  dojo.create("tr",{id:loc+'HeaderRow3'},loc+'HeaderRow2',"after");
+                  dojo.create("td",{id:loc+"DepositCreditsLabelCell",innerHTML:"Deposit"},loc+'HeaderRow3',"first");
+                  dojo.create("td",{id:loc+"DepositCreditsCell"},loc+'HeaderRow3',"last");
               var DepositSpinner = new dijit.form.NumberSpinner({
-                    value: this.inventory.credits,
+                    value: 0,
+                    style: "width:100px",
                     id: "depositSpinner",
-                    style: "width:50px",
                     constraints: {
                         currency: "USD",
                         min: 0,
@@ -92,16 +118,17 @@ dojo.require("dijit.Tooltip");
                     }
                 },
                 loc+"DepositCreditsCell");
-              dojo.create("td",{id:"bankWithdrawCreditsLabelCell",innerHTML:"Withdrawl"},loc+'HeaderRow',"last");
-              dojo.create("td",{id:"bankWithdrawlCreditsCell"},loc+'HeaderRow',"last");
+              dojo.create("tr",{id:loc+'HeaderRow4'},loc+'HeaderRow3',"after");
+              dojo.create("td",{id:"bankWithdrawCreditsLabelCell",innerHTML:"Withdrawl"},loc+'HeaderRow4',"first");
+              dojo.create("td",{id:"bankWithdrawlCreditsCell"},loc+'HeaderRow4',"last");
               var WithdrawlSpinner = new dijit.form.NumberSpinner({
-                    value: this.inventory.credits,
+                    value: 0,
+                    style: "width:100px",
                     id: "withdrawlSpinner",
-                    style: "width:50px",
                     constraints: {
                         currency: "USD",
                         min: 0,
-                        max: this.inventory.credits,
+                        max: this.bank.credits,
                         symbol: '$'
                     }
                 },
@@ -109,9 +136,23 @@ dojo.require("dijit.Tooltip");
                 }
                 else
                     {
-                        dojo.create("td",{id:"inventoryCreidts",innerHTML:'$'+cfg.credits},loc+'HeaderRow','last')
+                        dojo.create("tr",{id:loc+'HeaderRow3'},loc+'HeaderRow2',"after");
+                        dojo.create("td",{id:"inventoryCreidts",innerHTML:'$'+credits},loc+'HeaderRow3','last')
                     };
                 
+          },
+          reset: function(loc){
+            dojo.empty(dojo.byId(loc+'_right'));
+            dojo.empty(dojo.byId(loc+'_left'));
+            if(loc=='bank')
+                {
+                    dijit.byId('depositSpinner').destroy();
+                    dijit.byId('withdrawlSpinner').destroy();
+                };
+
+            tufflife.controllers.storage.setHeaderAndCredits({loc:loc});
+            tufflife.controllers.storage.getItems({loc:loc});
+
           },
         constructor: function(){
             var that = this;
@@ -128,7 +169,7 @@ dojo.require("dijit.Tooltip");
                         that[place].capacity = cap;
                         that[place].name = name;
                         that[place].credits = credits;
-                        that.getItems(place,cap, item_count);
+                        that.getItems({loc:place,cap:cap,item_count:item_count});
                         that.setHeaderAndCredits({loc:place,capacity:cap,name:name,credits:credits})
                     }
                 });
