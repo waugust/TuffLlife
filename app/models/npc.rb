@@ -30,7 +30,7 @@ class Npc < ActiveRecord::Base
   end
 
   def attackback(mytarget)
-    target_hp=mytarget.stat_health
+    target_hp=mytarget.base_health
     dmg=self.hit.to_i
     hits=[1]
     hits<<dmg
@@ -38,7 +38,7 @@ class Npc < ActiveRecord::Base
         if self.health>0
           unless self.miss?(mytarget)
             target_hp-=dmg
-            mytarget.stat_health-=dmg
+            mytarget.base_health-=dmg
             puts "#{mytarget.name} hit for #{dmg}, bringing health down to #{target_hp}"
           else
             puts "You missed"
