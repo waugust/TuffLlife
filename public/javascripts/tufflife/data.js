@@ -1,10 +1,37 @@
 dojo.provide("tufflife.data");
 dojo.require("dojo.data.ItemFileWriteStore");
 
+
 (function(){
 //  dojo.addOnLoad(function(){
 
     dojo.declare("datastore", null, {
+          functions:{
+            checkMaxed: function(stat)
+            {
+                var current;
+                var max;
+
+                tufflife.data.stats.fetchItemByIdentity({
+                    identity: stat,
+                    onItem: function(item){
+                        current= tufflife.data.stats.getValue(item,'current')
+                        max = tufflife.data.stats.getValue(item,'max');
+
+                        if (current==max)
+                            {
+                                tufflife.controllers.character.stats[stat+'_maxed']=true
+                            }
+                            else
+                                {
+                               
+                                    tufflife.controllers.time.updateStat(stat)
+                                }
+                    }
+                });
+                
+            }
+          },
           itemstore: new dojo.data.ItemFileWriteStore({
             url: "/home/getItems"
             /*
@@ -20,6 +47,67 @@ dojo.require("dojo.data.ItemFileWriteStore");
               :children=>[stats]
              */
             }),
+            itemstore_update: function(item,attr,oldValue, newValue){
+                var itemId = tufflife.data.itemstore.getValue(item,"item_id");
+                var inventoryItemCount = parseInt(tufflife.controllers.storage.inventory.items);
+                var action;
+                if(newValue=='equipment')
+                    {
+                        tufflife.controllers.storage.inventory.items = inventoryItemCount-1
+                        action = 'equip'
+                    }
+                else if (newValue=='bank')
+                    {
+                        tufflife.controllers.storage.inventory.items = inventoryItemCount-1;
+                        tufflife.controllers.storage.bank.items += 1;
+                        action='deposit'
+                    }
+                else
+                    {
+                        tufflife.controllers.storage.inventory.items = inventoryItemCount+1;
+                        if (oldValue=='bank')
+                            {
+                                tufflife.controllers.storage.bank.items -= 1;
+                                action='withdrawl'
+                            }
+                         else
+                             {
+                                 action='unequip'
+                             };
+                    };
+               
+                dojo.xhrPost({
+                    url: "/home/setItem",
+                    content: {item_id:itemId,
+                              item_action: action},
+                    handleAs: "json",
+                    load: function(response){
+            
+                       for(stat in response){
+
+                            if(stat=='health'||stat=='energy')
+                                {
+                                    tufflife.controllers.character.stats.set({type:stat,max:response[stat]});
+                                    
+                                }
+                            else
+                                {
+                                    tufflife.data.vitals.fetch({
+                                        onItem: function(item){
+                                            tufflife.data.vitals.setValue(item,stat, response[stat]);
+                                            tufflife.main.gui.vitals();
+                                        }
+                                    })
+                                };
+                       };
+                       
+                    }
+
+                })
+            },
+          vitals: new dojo.data.ItemFileWriteStore({
+             url: "/home/getVitals"
+          }),
           stats: new dojo.data.ItemFileWriteStore({
              url: "/home/getStats"
              /*
@@ -31,6 +119,34 @@ dojo.require("dojo.data.ItemFileWriteStore");
 
               */
           }),
+          updateStats: function(item,attr,oldValue, newValue){
+              var stat = tufflife.data.stats.getValue(item,'stat');
+              
+              dojo.xhrPost({
+                  url: "/home/setStats",
+                  content: {stat:stat,current:newValue}
+              });
+
+              var current = tufflife.data.stats.getValue(item,'current');
+              var max = tufflife.data.stats.getValue(item,'max');
+              
+              if(stat!='exp')
+                  {
+                  if (current==max)
+                      {
+                          tufflife.controllers.character.stats[stat+"_maxed"]=true;
+                          if(tufflife.controllers.time[stat+'_timer_running']){
+                              tufflife.controllers.time.stopTimer(stat);
+                          }
+                      }
+                  else
+                      {
+                          tufflife.controllers.character.stats[stat+"_maxed"]=false;
+                          tufflife.controllers.time.updateStat(stat);
+                      };
+                  };
+          },
+
           skills: new dojo.data.ItemFileWriteStore({
              url: "/home/getSkills"
              /*
@@ -57,9 +173,14 @@ dojo.require("dojo.data.ItemFileWriteStore");
                 this.itemstore.fetch();
                 this.stats.fetch();
                 this.skills.fetch();
+                this.vitals.fetch();
+                this.itemstore.onSet = this.itemstore_update;
+                this.stats.onSet = this.updateStats;
+
+
             }
           })
    tufflife.data = new datastore();
-
+   
 //});
 })();
