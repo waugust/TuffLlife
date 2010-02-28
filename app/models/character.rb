@@ -1,5 +1,5 @@
 class Character < ActiveRecord::Base
-  serialize :adjstats, Hash
+ # serialize :adjstats, Hash
 
   has_and_belongs_to_many :titles
   has_one :home
@@ -10,6 +10,7 @@ class Character < ActiveRecord::Base
   belongs_to :location
   has_many :addictions
   has_many :skills, :through => :titles
+
   
   def short_skills
     skills={}
@@ -54,7 +55,7 @@ class Character < ActiveRecord::Base
     end
   end
   def hit
-    dmgmax=((self.level*3)+((self.stat_strength*2)-20))+self.stat_attack
+    dmgmax=((self.level*3)+((self.base_strength*2)-20))+self.base_attack
     dmgmin=[dmgmax*0.5,dmgmax*0.3,dmgmax*0.1]
     dmg=array_rand(dmgmin)
     return dmg
@@ -71,23 +72,147 @@ class Character < ActiveRecord::Base
     return modified
   end
   def adjstats 
-    stats={}
-    self.attributes.each do |k,v| #loop through the attributes
-      if k =~ /^stat_.*$/         #filter out only the stat_ attributes
-        stat=k.gsub(/^stat_/,'')  #renam that attrbute to exclude the "stat_" prefix
+    changed_stats={}
+    self.attributes.each do |k,value| #loop through the attributes
+      if k =~ /^base_.*$/         #filter out only the base_ attributes
+        stat=k.gsub(/^base_/,'')  #renam that attrbute to exclude the "base_" prefix
         eq=self.equipment.stats   #equipment stat summary hash
-        value=eq.key?(stat.to_sym)?v+eq[stat.to_sym]:v #if the stat summary hash has the stat to adjust adjust it
-        stats[stat]=value   #set new values
+        #if the equipment stat hash has a value for the current stat
+        if eq.key?(stat.to_sym)
+          #value of the stat in the equipment stat hash
+          eqstat= eq[stat.to_sym]
+
+            if stat=='defense'||stat=='attack'
+              if stat=='defense'
+                if eq.key?(:agility)
+                  self["adj_agility"]=eq[:agility]+self["base_agility"]
+                else
+                  statmod = self.base_defense+(self.adj_agility*0.35).to_i
+                  finaldef = statmod+eqstat
+                  if finaldef!=self["adj_defense"]
+                    changed_stats[:defense]=finaldef
+                  end
+                  self["adj_defense"]=finaldef
+                end
+              else
+                if eq.key?(:strength)
+                  self["adj_strength"]=eq[:strength]+self["base_strength"]
+                else
+                  statmod = self.base_attack+(self.adj_strength*0.35).to_i
+                  finalatk = statmod+eqstat
+                  if finalatk!=self["adj_attack"]
+                    changed_stats[:attack]=finalatk
+                  end
+                  self["adj_attack"]=finalatk
+                end
+              end
+            else
+              if self["adj_"+stat]!=eqstat+value
+                changed_stats[stat.to_sym]=eqstat+value
+                self["adj_"+stat]=eqstat+value
+              end
+            end
+
+        else
+          if stat=='defense'||stat=='attack'
+            if stat=='defense'
+              if eq.key?(:agility)
+                self["adj_agility"]=eq[:agility]+self["base_agility"]
+              else
+                statmod = self.base_defense+(self.adj_agility*0.35).to_i
+                finaldef = statmod
+                if finaldef!=self["adj_defense"]
+                  changed_stats[:defense]=finaldef
+                end
+                self["adj_defense"]=statmod
+              end
+            else
+              if eq.key?(:strength)
+                self["adj_strength"]=eq[:strength]+self["base_strength"]
+              else
+                statmod = self.base_attack+(self.adj_strength*0.35).to_i
+                finalatk = statmod
+                if finalatk!=self["adj_attack"]
+                  changed_stats[:attack]=finalatk
+                end
+                self["adj_attack"]=finalatk
+              end
+            end
+          else
+            if (self["adj_"+stat]!=self["base_"+stat])&&stat!="health"&&stat!="energy"
+              changed_stats[stat.to_sym]=self["base_"+stat]
+              self["adj_"+stat]=self["base_"+stat]
+            end
+          end
+        end
       end
     end
-    stats["health"]+=stats["stamina"]*10
-    self.current_hp+=stats["stamina"]*10
-    stats["defense"]+=stats["agility"]*0.35.to_i
-    stats["attack"]+=stats["strength"]*0.35.to_i
-    stats["energy"]+=stats["agility"]*2.to_i
-    self.current_en+=stats["agility"]*2.to_i
-    stats
+
+    health_change =self.base_health+(self.adj_stamina*10)
+    if health_change!=self.adj_health
+      changed_stats[:health]=health_change
+      self.adj_health=health_change
+    end
+
+    energy_change = self.base_energy+(self.adj_agility*2.to_i)
+    if energy_change!=self.adj_energy
+      changed_stats[:energy]=energy_change
+      self.adj_energy= energy_change
+    end
+    self.save
+    return changed_stats
   end
+  def adjstats2
+    changed_stats=[]
+    self.attributes.each do |k,v| #loop through the attributes
+      if k =~ /^base_.*$/         #filter out only the base_ attributes
+        stat=k.gsub(/^base_/,'')  #renam that attrbute to exclude the "base_" prefix
+        eq=self.equipment.stats   #equipment stat summary hash
+        value=eq.key?(stat.to_sym)?v+eq[stat.to_sym]:v #if the stat summary hash has the stat to adjust adjust it
+          if (self["adj_"+stat]!=value&&v!=value)
+            changed_stats.push({stat.to_sym=>value})
+            self["adj_"+stat]=value
+          end
+      end
+    end
+    health_change =self.base_health+(self.adj_stamina*10)
+    if health_change!=self.adj_health
+      if changed_stats.collect { |stats| stats.has_key?(:health) }.include?(true)
+        changed_stats.reject! { |stats| stats.has_key?(:health) }
+      end
+      changed_stats.push({:health=>health_change})
+      self.adj_health=health_change
+    end
+
+    defense_change = self.base_defense+(self.adj_agility*0.35.to_i)
+    if defense_change!=self.adj_defense
+      if changed_stats.collect { |stats| stats.has_key?(:defense) }.include?(true)
+        changed_stats.reject! { |stats| stats.has_key?(:defense) }
+      end
+      changed_stats.push({:defense=>defense_change})
+      self.adj_defense=defense_change
+    end
+    attack_change = self.base_attack+(self.adj_strength*0.35.to_i)
+    if attack_change!=self.adj_attack
+      if changed_stats.collect { |stats| stats.has_key?(:attack) }.include?(true)
+        changed_stats.reject! { |stats| stats.has_key?(:attack) }
+      end
+      changed_stats.push({:attack=>attack_change})
+      self.adj_attack=attack_change
+    end
+    energy_change = self.base_energy+(self.adj_agility*2.to_i)
+    if energy_change!=self.adj_energy
+      if changed_stats.collect { |stats| stats.has_key?(:energy) }.include?(true)
+        changed_stats.reject! { |stats| stats.has_key?(:energy) }
+      end
+
+      changed_stats.push({:energy=>energy_change})
+      self.adj_energy= energy_change
+    end
+    self.save
+    return changed_stats
+  end
+
   def hpen_max
     self.current_hp=adjstats["health"]
     self.current_en=adjstats["energy"]
