@@ -3,16 +3,48 @@ class HomeController < ApplicationController
     @character = Character.find(1)
     session[:character]=@character.id
   end
+  def setItem
+    character = Character.find(session[:character])
+    eqItem = Item.find(params[:item_id])
+    item_action = params[:item_action]
+    if item_action == 'equip'
+      eqItem.equip(character)
+    elsif item_action=="unequip"
+      eqItem.unequip(character)
+    elsif item_action=='deposit'
+      eqItem.deposit(character)
+    elsif item_action=='withdrawl'
+      eqItem.withdrawl(character)
+    end
 
+    changed = character.adjstats
+    response = {}
+    response["changes"]=changed
+    render :json => changed
+  end
   def getStats
   character = Character.find(session[:character])
     response={}
     response["identifier"]="stat"
     response["label"]="stat"
     response["items"]=[{:stat=>"exp",:current=>character.exp,:max=>character.maxexp},
-                      {:stat=>"health",:current=>character.current_hp,:max=>character.adjstats["health"]},
-                      {:stat=>"energy",:current=>character.current_en,:max=>character.adjstats["energy"]}]
+                      {:stat=>"health",:current=>character.current_hp,:max=>character.adj_health},
+                      {:stat=>"energy",:current=>character.current_en,:max=>character.adj_energy}]
     render :json => response
+  end
+  def setStats
+  character = Character.find(session[:character])
+    stat = params[:stat]
+    value = params[:current]
+    if stat == 'health'
+      stat = "current_hp"
+    elsif stat== "energy"
+      stat = "current_en"
+    end
+    character[stat.to_sym]=value
+    character.save
+
+    render :json => "updated"
   end
   def getSkills
   character = Character.find(session[:character])
@@ -39,15 +71,14 @@ class HomeController < ApplicationController
   def getItems
     character=Character.find(session[:character])
     response={}
-    stats={}
-    invstats=[]
-    bankstats = []
+    invstats={}
+    bankstats = {}
+    eqstats={}
     items=[]
-    children={}
     slots = ["rhand","lhand","chest","pants","head"]
     character.inventory.items.each do |item|
       item.stats.each do |stat,value|
-        stats[stat]=value
+        invstats[stat]=value
       end
 
       response["items"]=items.push({
@@ -60,15 +91,13 @@ class HomeController < ApplicationController
           :description=>item.description,
           :item_type=>item.type,
           :location=>"inventory",
-          :children=>[stats]
+          :children=>[invstats]
         })
+    invstats={}
     end
     character.bank.items.each do |item|
       item.stats.each do |stat,value|
-        stats[stat]=value
-      end
-      if(stats) then
-        response["items"]["children"]<<invstats.push(stats)
+        bankstats[stat]=value
       end
       response["items"]=items.push({
           :slot=>item.slot,
@@ -79,13 +108,15 @@ class HomeController < ApplicationController
           :image=>item.image,
           :description=>item.description,
           :item_type=>item.type,
-          :location=>"bank"})
+          :location=>"bank",
+          :children=>[bankstats]})
+    bankstats={}
     end
     slots.each do |slot|
       if(character.equipment[slot.to_sym]) then
         eqitem = Item.find(character.equipment[slot.to_sym][:id])
         eqitem.stats.each do |stat,value|
-          stats[stat]=value
+          eqstats[stat]=value
         end
         response["items"]=items.push({
             :slot=>slot,
@@ -97,9 +128,25 @@ class HomeController < ApplicationController
             :description=>eqitem.description,
             :item_type=>eqitem.type,
             :location=>"equipment",
-            :children=>[stats]})
+            :children=>[eqstats]})
+      eqstats={}
       end
     end
+    render :json => response
+  end
+  def getVitals
+    character=Character.find(session[:character])
+    response={}
+    response["items"]=[
+      :strength=>character.adj_strength,
+      :intellect=>character.adj_intellect,
+      :agility=>character.adj_agility,
+      :stamina=>character.adj_stamina,
+      :attack=>character.adj_attack,
+      :defense=>character.adj_defense,
+      :karma=>character.adj_karma,
+      :luck=>character.adj_luck
+    ]
     render :json => response
   end
 end
